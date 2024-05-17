@@ -1,15 +1,20 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import TelegramBot from '@codebam/cf-workers-telegram-bot';
 
 export default {
 	async fetch(request, env, ctx) {
+		const bot = new TelegramBot(env.TOKEN);
+		await bot
+			.on('start', async function (context) {
+				switch (context.update_type) {
+					case 'message':
+						await context.reply('Hello from Cloudflare workers');
+						break;
+
+					default:
+						break;
+				}
+			})
+			.handle(request.clone());
 		return new Response('Hello World!');
 	},
 };
